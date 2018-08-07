@@ -1,0 +1,57 @@
+apply plugin: 'com.android.application'
+
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+    defaultConfig {
+        applicationId "com.example.aiiage.jetweather"
+        minSdkVersion 15
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath false
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:27.1.1'
+    compile 'com.android.support:animated-vector-drawable:27.1.1'
+    compile 'com.android.support.constraint:constraint-layout:1.1.2'
+    compile 'com.android.support:design:27.1.1'
+    testCompile 'junit:junit:4.12'
+    androidTestCompile 'com.android.support.test:runner:1.0.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.2'
+    compile 'org.litepal.android:core:2.0.0'
+    compile 'com.squareup.okhttp3:okhttp:3.11.0'
+    compile 'com.google.code.gson:gson:2.8.5'
+    compile 'com.github.bumptech.glide:glide:4.7.1'
+    compile 'com.github.bumptech.glide:compiler:4.7.1'
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    compile 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-12'
+    //悬浮按钮
+    compile 'com.laocaixw.suspendbuttonlayout:suspendbuttonlayout:1.0.3'
+    implementation files('libs/BaiduLBS_Android.jar')
+    implementation files('libs/Msc.jar')
+}

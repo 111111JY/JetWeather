@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <dbname value="JetWeather" />
+    <version value="1" />
+    <list>
+        <mapping class="com.example.aiiage.jetweather.db.Province" />
+        <mapping class="com.example.aiiage.jetweather.db.City" />
+        <mapping class="com.example.aiiage.jetweather.db.County" />
+    </list>
+</litepal>

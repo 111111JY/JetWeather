@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:id="@+id/text_input_layout"
+        android:layout_height="wrap_content"
+        android:textColorHint="@android:color/black"
+        app:errorEnabled="true">
+
+        <EditText
+            android:id="@+id/et_add_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:singleLine="true"
+            android:imeOptions="actionGo"
+            android:hint="请输入需要添加的城市"
+            android:textColor="#000000"
+            android:textSize="18sp">
+
+            <requestFocus></requestFocus>
+        </EditText>
+    </android.support.design.widget.TextInputLayout>
+
+
+</LinearLayout>
