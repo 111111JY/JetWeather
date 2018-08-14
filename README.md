@@ -28,4 +28,15 @@
 **该软件为本人学习测试所有，有需要请联系本人。**
 **微信  WWJ1436300433**
 ### 下面是一些界面截图：
-![首页]([])
+![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p1.png)
+![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p2.png)
+![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p3.png)
+![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p4.png)
+![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p5.png)
+![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p6.png)
+![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p7.png)
+![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p8.png)
+![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p9.png)
+![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p10.png)
+![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p11.png)
+
