@@ -28,15 +28,14 @@
 **该软件为本人学习测试所有，有需要请联系本人。**
 **微信  WWJ1436300433**
 ### 下面是一些界面截图：
-![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p1.png)
-![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p2.png)
-![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p3.png)
-![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p4.png)
-![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p5.png)
-![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p6.png)
-![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p7.png)
-![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p8.png)
-![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p9.png)
-![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p10.png)
-![images](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p11.png)
-
+![首页](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p1.png);
+![开屏页](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p2.png);
+![初始定位](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p3.png);
+![侧滑栏](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p4.png);
+![天气主页](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p5.png);
+![更新频率](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p6.png);
+![语音播报](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p7.png);
+![关于](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p8.png);
+![运动计步](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p9.png);
+![训练计划](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p10.png);
+![城市列表](https://github.com/111111JY/JetWeather_1/app/src/main/res/raw/images/p11.png);
