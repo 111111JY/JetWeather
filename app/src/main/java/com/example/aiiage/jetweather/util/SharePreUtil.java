@@ -14,7 +14,7 @@ public class SharePreUtil {
         if (sp == null) {
             sp = ctx.getSharedPreferences("config", Context.MODE_PRIVATE);
         }
-        sp.edit().putBoolean(key, value).commit();
+        sp.edit().putBoolean(key, value).apply();
     }
 
     /** 取出数据 **/
@@ -23,5 +23,21 @@ public class SharePreUtil {
             sp = ctx.getSharedPreferences("config", Context.MODE_PRIVATE);
         }
         return sp.getBoolean(key, defValue);
+    }
+
+    /** 保存数据 **/
+    public static void saveInt(Context ctx, String key, int weight) {
+        if (sp == null) {
+            sp = ctx.getSharedPreferences("config", Context.MODE_PRIVATE);
+        }
+        sp.edit().putInt(key, weight).apply();
+    }
+
+    /** 取出数据 **/
+    public static int getInt(Context ctx, String key, int weight) {
+        if (sp == null) {
+            sp = ctx.getSharedPreferences("config", Context.MODE_PRIVATE);
+        }
+        return sp.getInt(key, weight);
     }
 }

@@ -10,11 +10,14 @@ import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.os.VibrationEffect;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.example.aiiage.jetweather.MyApplication;
 import com.example.aiiage.jetweather.R;
+import com.example.aiiage.jetweather.WeatherActivity;
 import com.example.aiiage.jetweather.gson.Weather;
 import com.example.aiiage.jetweather.util.HttpUtil;
 import com.example.aiiage.jetweather.util.Utility;
@@ -26,6 +29,8 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class AutoUpdateService extends Service {
+
+    private static final String TAG="Update";
     public AutoUpdateService() {
     }
 
@@ -41,7 +46,6 @@ public class AutoUpdateService extends Service {
         if (isUpdateTime){
             updateWeather();
             updateBingPic();
-            notifyUser();
             AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
             int autoUpdateTime = pref.getInt("autoUpdateTime", 60);
             int anHour = autoUpdateTime  * 60 * 1000;
@@ -52,6 +56,7 @@ public class AutoUpdateService extends Service {
             manager.cancel(pi);
             //setRepeating():唤醒类型、第一次执行延迟时间、间隔时间、PendingIntent
             manager.setRepeating(AlarmManager.RTC_WAKEUP,triggerAtTime,triggerAtTime,pi);
+            notifyUser();
             //manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pi);
         }
         return super.onStartCommand(intent, flags, startId);
@@ -80,6 +85,7 @@ public class AutoUpdateService extends Service {
                                 .edit();
                         editor.putString("weather", responseText);
                         editor.apply();
+                        Log.d(TAG, "onResponse: "+weather.toString());
                     }
                 }
             });
@@ -101,17 +107,23 @@ public class AutoUpdateService extends Service {
                         .edit();
                 editor.putString("bing_pic", bingPic);
                 editor.apply();
+                Log.d(TAG, "onResponse: --------成功");
             }
         });
 
     }
 
     private void notifyUser(){
+        Intent intent = new Intent(this, WeatherActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
         NotificationManager manager=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         Notification notification=new NotificationCompat.Builder(MyApplication.getContext())
                 .setContentTitle("Tips")
                 .setContentText("天气信息更新成功了，快去看看吧！")
                 .setWhen(System.currentTimeMillis())
+                .setContentIntent(pi)
+                .setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_SOUND| Notification.DEFAULT_VIBRATE)
                 .setSmallIcon(R.drawable.app_weather_icon)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(),R.drawable.weather_icon))
                 .build();

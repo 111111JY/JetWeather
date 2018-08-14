@@ -55,6 +55,7 @@ public class VideoActivity extends AppCompatActivity {
                 }
                 Intent intent = new Intent(VideoActivity.this, AddCityActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.zoom_in,R.anim.zoom_out);
                 finish();
             }
         });

@@ -106,8 +106,8 @@ public class MyApplication extends Application {
         //语音唤醒设置
         voiceWake.setParameter(SpeechConstant.ENGINE_TYPE, "cloud");
 //		voiceWake.setParameter(SpeechConstant.CLOUD_GRAMMAR, grammarID);
-        voiceWake.setParameter(SpeechConstant.IVW_THRESHOLD, "0:1250;1:1250;2:1250" );
-        voiceWake.setParameter(SpeechConstant.ASR_THRESHOLD, "70");
+        voiceWake.setParameter(SpeechConstant.IVW_THRESHOLD, "0:1650;1:1650;2:1650" );
+        voiceWake.setParameter(SpeechConstant.ASR_THRESHOLD, "80");
         voiceWake.setParameter(SpeechConstant.IVW_SST, "wakeup");
         voiceWake.setParameter(SpeechConstant.KEEP_ALIVE, "1");
         voiceWake.setParameter(SpeechConstant.IVW_NET_MODE, "" + 0);

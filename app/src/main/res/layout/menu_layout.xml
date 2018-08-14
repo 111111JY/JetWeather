@@ -6,7 +6,7 @@
     android:layout_height="250dp"
     android:layout_gravity="bottom"
     android:id="@+id/cl_menu"
-    android:background="@android:color/holo_blue_light">
+    android:background="@drawable/menu_black_bg_shape">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -41,7 +41,7 @@
                     android:layout_gravity="center_horizontal"
                     android:text="添加城市"
                     android:textColor="#fff"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -64,7 +64,7 @@
                     android:layout_gravity="center_horizontal"
                     android:text="更新频率"
                     android:textColor="#fff"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -87,9 +87,31 @@
                     android:layout_gravity="center_horizontal"
                     android:text="语音播报"
                     android:textColor="#fff"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_step_count"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="15dp"
+                    android:background="@drawable/stepcounter" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="运动计步"
+                    android:textColor="#fff"
+                    android:textSize="14sp" />
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -110,8 +132,9 @@
                     android:layout_gravity="center_horizontal"
                     android:text="关于我们"
                     android:textColor="#fff"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
+
 
         </LinearLayout>
 

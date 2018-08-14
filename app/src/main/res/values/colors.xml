@@ -19,19 +19,24 @@
     <color name="bg_head_color">#F8F8F8</color>
     <color name="province_line_border">#C7C7C7</color>
     <color name="main_textcolormore">#63564B</color>
+    <color name="lany">#26E1FF</color>
+    <color name="yellow">#fd9c06</color>
+    <color name="red">#FF413A</color>
+    <color name="grey">#BDBDBD</color>
+    <color name="black">#000000</color>
+    <color name="color_one">#FDE4BB</color>
+    <color name="color_two">#FCD2A1</color>
+    <color name="color_three">#EF8273</color>
     <!-- 白色 -->
     <color name="bg_White">#FFFFFF</color>
     <!-- 透明 -->
     <color name="transparent">#00000000</color>
     <!-- 纯白-->
-    <!-- 黑色 -->
-    <color name="black">#ff000000</color>
     <!-- 深绿 -->
-    <color name="m29c741">#29c741</color>
+    <color name="m29c741">#48FF4F</color>
     <!-- 灰色 -->
     <color name="green">#146621</color>
-    <!-- 红色 -->
-    <color name="red">#7fff0000</color>
+
     <!--桔黄色 -->
     <color name="bisque">#ffe4c4</color>
     <!--鹿皮色 -->

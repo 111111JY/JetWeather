@@ -1,12 +1,16 @@
 package com.example.aiiage.jetweather;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -14,6 +18,8 @@ import android.widget.Toast;
 import com.example.aiiage.jetweather.service.AutoUpdateService;
 import com.example.aiiage.jetweather.service.AutoUpdateService6;
 import com.example.aiiage.jetweather.viewspread.helper.BaseViewHelper;
+
+import java.util.Calendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,26 +41,25 @@ public class UpdateFrequentActivity extends AppCompatActivity {
     @BindView(R.id.rb_frequent_24hour)
     RadioButton rb_frequent_24hour;
 
-    BaseViewHelper helper;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MyApplication.setStatusBarColor(UpdateFrequentActivity.this, Color.TRANSPARENT);
         setContentView(R.layout.layout_update_frequent);
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         ButterKnife.bind(this);
         init();
     }
 
     private void init() {
-        //过度动画设置
-        helper = new BaseViewHelper
-                .Builder(UpdateFrequentActivity.this)
-                .isFullWindow(true)//是否全屏显示
-                .isShowTransition(true)//是否显示过渡动画
-                .setDimColor(Color.BLACK)//遮罩颜色
-                .setDimAlpha(200)//遮罩透明度
-                .create();//开始动画
         //用于选中radio button的保存
         rb_frequent_never.setId(R.id.rb_frequent_never);
         rb_frequent_2hour.setId(R.id.rb_frequent_2hour);
@@ -104,23 +109,28 @@ public class UpdateFrequentActivity extends AppCompatActivity {
                     default:
                 }
                 editor.apply();
+
+                SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
+                int time=prefs.getInt("autoUpdateTime",0);
+                Calendar calendar = java.util.Calendar.getInstance();
+                AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
                 Intent intent = new Intent(UpdateFrequentActivity.this, AutoUpdateService.class);
-                //Intent intent6 = new Intent(UpdateFrequentActivity.this, AutoUpdateService6.class);
-                startService(intent);
+                PendingIntent pi = PendingIntent.getService(MyApplication.getContext(), 0, intent, 0);
+                if (manager != null) {
+                    manager.setRepeating(AlarmManager.RTC_WAKEUP,
+                            calendar.getTimeInMillis()+time * 60 * 1000,time * 60 * 1000, pi);
+                }
+//                startService(intent);
                 Toast.makeText(UpdateFrequentActivity.this, "设置成功", Toast.LENGTH_SHORT).show();
             }
         });
     }
-    @Override
-    public void onBackPressed() {
-        if (helper != null && helper.isShowing()) {
-            helper.backActivity(this);
-        } else {
-            super.onBackPressed();
-            finish();
-        }
-    }
 
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.zoom_in,R.anim.zoom_out);
+    }
 
     @Override
     protected void onDestroy() {

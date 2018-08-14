@@ -16,18 +16,27 @@
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
         android:textColor="#fff"
+        android:layout_marginTop="12dp"
         android:textSize="20sp" />
 
     <Button
+        android:id="@+id/btn_change_city"
+        android:layout_width="30dp"
+        android:layout_height="25dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/loadmore" />
+
+    <Button
+        android:id="@+id/btn_location"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:id="@+id/btn_location"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
-        android:background="@drawable/location"/>
+        android:background="@drawable/location" />
 
 
 </RelativeLayout>

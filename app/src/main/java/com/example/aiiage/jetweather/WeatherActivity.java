@@ -1,10 +1,10 @@
 package com.example.aiiage.jetweather;
 
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.Build;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -21,10 +21,15 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,25 +42,22 @@ import com.bumptech.glide.Glide;
 import com.example.aiiage.jetweather.gson.Forecast;
 import com.example.aiiage.jetweather.gson.Hourly;
 import com.example.aiiage.jetweather.gson.Weather;
-import com.example.aiiage.jetweather.test.TestActivity;
 import com.example.aiiage.jetweather.util.ConstantValue;
 import com.example.aiiage.jetweather.util.HttpUtil;
 import com.example.aiiage.jetweather.util.SharePreUtil;
 import com.example.aiiage.jetweather.util.TTSUtils;
 import com.example.aiiage.jetweather.util.Utility;
-import com.example.aiiage.jetweather.viewspread.helper.BaseViewHelper;
-import com.iflytek.cloud.InitListener;
-import com.iflytek.cloud.SpeechConstant;
-import com.iflytek.cloud.SpeechSynthesizer;
-import com.iflytek.cloud.SpeechUtility;
-import com.iflytek.cloud.WakeuperListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.io.IOException;
-import java.util.zip.Inflater;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -109,6 +111,10 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     TextView tv_car_wash_brf;
     @BindView(R.id.tv_sport_brf)
     TextView tv_sport_brf;
+    @BindView(R.id.tv_weather_hum)
+    TextView tv_weather_hum;
+    @BindView(R.id.tv_weather_wind_dir)
+    TextView tv_weather_wind_dir;
     @BindView(R.id.btn_float)
     FloatingActionButton btn_float;
     @BindView(R.id.btn_close)
@@ -121,6 +127,10 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     Button btn_update_frequent;
     @BindView(R.id.btn_spoken)
     Button btn_spoken;
+    @BindView(R.id.btn_step_count)
+    Button btn_step_count;
+    @BindView(R.id.btn_change_city)
+    Button btn_change_city;
     @BindView(R.id.cl_menu)
     CoordinatorLayout cl_menu;
     @BindView(R.id.btn_delete)
@@ -139,47 +149,42 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     LinearLayout hourly_layout;
 
     private String mWeatherId;
+    private String WeatherId;
     String cityName;
 
-    BaseViewHelper helper;
+    Animation loadAnimation;
     //初始化百度定位
     LocationClient mLocationClient;
     MyLocationListener myLocationListener;
+    //存储城市的字符串列表
+    ArrayList<String> CitylistSave = new ArrayList<>();
+    ArrayList<String> CitylistGet = new ArrayList<>();
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MyApplication.setStatusBarColor(this, Color.TRANSPARENT);
+        //MyApplication.setStatusBarColor(this, Color.TRANSPARENT);
 
         setContentView(R.layout.layout_weather);
         unbinder = ButterKnife.bind(this);
+        //给按键绑定点击事件监听
         btn_location.setOnClickListener(this);
-        //过渡动画
-        helper = new BaseViewHelper
-                .Builder(WeatherActivity.this)
-                .isFullWindow(true)//是否全屏显示
-                .isShowTransition(true)//是否显示过渡动画
-                .setDimColor(Color.BLACK)//遮罩颜色
-                .setDimAlpha(200)//遮罩透明度
-                .create();//开始动画
-
-        /**
-         * 测试中
-         */
-        Button btn_test=(Button)findViewById(R.id.btn_test);
-        btn_test.setVisibility(View.GONE);
-//        btn_test.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent=new Intent(WeatherActivity.this, TestActivity.class);
-//                startActivity(intent);
-//            }
-//        });
+        btn_nav.setOnClickListener(this);
+        btn_float.setOnClickListener(this);
+        btn_close.setOnClickListener(this);
+        btn_add.setOnClickListener(this);
+        btn_update_frequent.setOnClickListener(this);
+        btn_spoken.setOnClickListener(this);
+        btn_step_count.setOnClickListener(this);
+        btn_about.setOnClickListener(this);
+        btn_delete.setOnClickListener(this);
+        btn_delete_layout_close.setOnClickListener(this);
+        btn_change_city.setOnClickListener(this);
 
         int NewWorkType = HttpUtil.getAPNType(MyApplication.getContext());
         if (NewWorkType == 0) {
-            Toast.makeText(this, "请开启网络后再点击定位", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "请开启网络后再城市列表查看城市天气信息", Toast.LENGTH_LONG).show();
         } else {
             init();
             Boolean isFirstLoading = SharePreUtil.getBoolean(getApplicationContext(), ConstantValue.ISFIRSTLOADING, true);
@@ -190,21 +195,40 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                 SharePreUtil.saveBoolean(getApplicationContext(), ConstantValue.ISFIRSTLOADING, false);
             }
         }
+        /**
+         * 下拉刷新手动更新天气信息
+         */
+        refresh_layout.setEnableAutoLoadMore(false);
+        refresh_layout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                requestWeather(mWeatherId);
+                refresh_layout.finishRefresh(2000/*,false*/);
+                refresh_layout.setEnableLoadMore(true);
+            }
+        });
+        refresh_layout.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
+                loadAnimation = AnimationUtils.loadAnimation(WeatherActivity.this, R.anim.zoom_in);
+                cl_delete.startAnimation(loadAnimation);
+                cl_delete.setVisibility(View.VISIBLE);
+                refresh_layout.finishLoadMore(2000);
+                refresh_layout.setEnableLoadMore(true);
+
+            }
+        });
     }
 
     /**
      * 工具类、数据、图片初始化
      */
     private void init() {
-        btn_nav.setOnClickListener(this);
-        btn_float.setOnClickListener(this);
-        btn_close.setOnClickListener(this);
-        btn_add.setOnClickListener(this);
-        btn_update_frequent.setOnClickListener(this);
-        btn_spoken.setOnClickListener(this);
-        btn_about.setOnClickListener(this);
-        btn_delete.setOnClickListener(this);
-        btn_delete_layout_close.setOnClickListener(this);
+        CitylistGet = getListFromLocal("CityList");
+        if (CitylistGet != null) {
+            CitylistSave.addAll(CitylistGet);
+        }
+
 
         //讯飞语音播报初始化
         TTSUtils.getInstance().init();
@@ -220,34 +244,20 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         String weatherString = prefs.getString("weather", null);
         if (weatherString != null) {
             Weather weather = Utility.handleWeatherResponse(weatherString);
-            mWeatherId = weather.basic.cityId;
-            showWeatherInfo(weather);
+            mWeatherId = weather.basic.weatherId;
+            if (mWeatherId==null||mWeatherId.equals("")){
+                Weather weather6=Utility.handleWeather6Response(weatherString);
+                WeatherId=weather6.basic.cityId;
+                showWeatherInfo6(weather6);
+            }else {
+                showWeatherInfo(weather);
+            }
         } else {
             //无缓存时区服务器查询天气
             mWeatherId = getIntent().getStringExtra("weather_id");
             weather_layout.setVisibility(View.VISIBLE);
             requestWeather(mWeatherId);
         }
-        /**
-         * 下拉刷新手动更新天气信息
-         */
-        refresh_layout.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-                requestWeather(mWeatherId);
-                refresh_layout.finishRefresh(2000/*,false*/);
-                refresh_layout.setEnableLoadMore(true);
-            }
-        });
-        refresh_layout.setOnLoadMoreListener(new OnLoadMoreListener() {
-            @Override
-            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-                cl_delete.setVisibility(View.VISIBLE);
-                refresh_layout.finishLoadMore(2000);
-                refresh_layout.setEnableLoadMore(true);
-
-            }
-        });
         loadForecastBg();
     }
 
@@ -326,6 +336,35 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     /**
+     * 保存城市列表到SharedPreferences
+     *
+     * @param list
+     * @param key
+     */
+    public void saveListInLocal(ArrayList<String> list, String key) {
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(list);
+        editor.putString(key, json);
+        editor.apply();
+    }
+
+    /**
+     * 从SharedPreferences中取出城市列表
+     *
+     * @param key
+     */
+    public ArrayList<String> getListFromLocal(String key) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Gson gson = new Gson();
+        String json = prefs.getString(key, null);
+        Type type = new TypeToken<ArrayList<String>>() {
+        }.getType();
+        return gson.fromJson(json, type);
+    }
+
+    /**
      * 处理并展示Weather实体类中的数据
      */
     private void showWeatherInfo(Weather weather) {
@@ -334,11 +373,18 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         String degree = weather.now.temperature + "℃";
         String weatherInfo = weather.now.more.info;
         String cond_code = weather.now.more.cond_code;
+
+        String hum = "相对湿度:" + weather.now.hum + "%";
+        String wind_dir = weather.now.wind_dir;
+
         changeWeatherStatusPic(cond_code);
         tv_title.setText(cityName);
         tv_update_time.setText(updateTime);
         tv_degree.setText(degree);
         tv_weather_info.setText(weatherInfo);
+
+        tv_weather_hum.setText(hum);
+        tv_weather_wind_dir.setText(wind_dir);
 
         btn_float.setVisibility(View.VISIBLE);
         /**
@@ -405,11 +451,19 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         String degree = weather.now.temperature + "℃";
         String weatherInfo = weather.now.cond_txt;
         String cond_code = weather.now.cond_code;
+
+        String hum = "相对湿度:" + weather.now.hum + "%";
+        String wind_dir = weather.now.wind_dir;
+
         changeWeatherStatusPic(cond_code);
         tv_title.setText(cityName);
         tv_update_time.setText(updateTime);
         tv_degree.setText(degree);
         tv_weather_info.setText(weatherInfo);
+
+        tv_weather_hum.setText(hum);
+        tv_weather_wind_dir.setText(wind_dir);
+
         /**
          * 先移除逐小时天气列表view，再加载新数据到其中
          */
@@ -553,7 +607,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
     /**
      * 根据获取到的天气状态码动态更换天气状态图片
      */
-    private void changeWeatherStatusPic(String code) {
+    public void changeWeatherStatusPic(String code) {
         String cond_code = code;
         switch (cond_code) {
             case ("100"):
@@ -776,6 +830,12 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         public void onReceiveLocation(BDLocation bdLocation) {
             cityName = bdLocation.getCity();
+            /**
+             * 将获取到的城市名存储到列表中并写入SharedPreferences
+             */
+            CitylistSave.add(cityName);
+            saveListInLocal(CitylistSave, "CityList");
+            Log.e("saveArrayList:", "Save ArrayList success" + CitylistSave);
             Log.d("Locate", cityName);
             final AlertDialog dialog = new AlertDialog.Builder(WeatherActivity.this)
                     .setTitle("定位服务")
@@ -806,9 +866,39 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.btn_float:
                 btn_float.setVisibility(View.GONE);
                 drawerLayout.closeDrawer(Gravity.START);
+                loadAnimation = AnimationUtils.loadAnimation(this, R.anim.scale);
+                cl_menu.startAnimation(loadAnimation);
                 cl_menu.setVisibility(View.VISIBLE);
                 break;
+            case R.id.btn_change_city:
+                /**
+                 * 从SharedPreferences取出城市到列表中
+                 */
+                CitylistGet = getListFromLocal("CityList");
+                //Log.e("getArrayList:", "Get ArrayList size" + CitylistGet.size());
+                if (CitylistGet != null) {
+                    View change_city_layout = View.inflate(this, R.layout.layout_change_city, null);
+                    final ListView lv_change_city = change_city_layout.findViewById(R.id.lv_change_city);
+
+                    final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                    dialog.setTitle("城市列表")
+                            .setView(change_city_layout)
+                            .setAdapter(new ArrayAdapter<>(this,
+                                    android.R.layout.simple_list_item_1, CitylistGet), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    addCity(CitylistGet.get(i));
+                                    Toast.makeText(WeatherActivity.this, "已为你切换到" + CitylistGet.get(i), Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .show();
+                } else {
+                    Toast.makeText(this, "你还没有添加其他城市呢", Toast.LENGTH_SHORT).show();
+                }
+                break;
             case R.id.btn_close:
+                loadAnimation = AnimationUtils.loadAnimation(this, R.anim.scale_close);
+                cl_menu.startAnimation(loadAnimation);
                 cl_menu.setVisibility(View.GONE);
                 btn_float.setVisibility(View.VISIBLE);
                 break;
@@ -816,30 +906,40 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                 showAddCityDialog("添加城市", null, "添加");
                 break;
             case R.id.btn_delete_layout_close:
+                loadAnimation = AnimationUtils.loadAnimation(WeatherActivity.this, R.anim.zoom_out);
+                cl_delete.startAnimation(loadAnimation);
                 cl_delete.setVisibility(View.GONE);
                 break;
             case R.id.btn_update_frequent:
                 Intent intent_update_frequent = new Intent(WeatherActivity.this, UpdateFrequentActivity.class);
-                new BaseViewHelper
-                        .Builder(WeatherActivity.this, btn_update_frequent)
-                        .startActivity(intent_update_frequent);
+                startActivity(intent_update_frequent);
+                overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
+                cl_menu.setVisibility(View.GONE);
+                break;
+            case R.id.btn_step_count:
+                Intent intent_step_count = new Intent(WeatherActivity.this, StepCountMainActivity.class);
+                startActivity(intent_step_count);
+                overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
                 cl_menu.setVisibility(View.GONE);
                 break;
             case R.id.btn_spoken:
                 Intent intent_spoken_forecast = new Intent(WeatherActivity.this, SpokenForecastActivity.class);
-                new BaseViewHelper
-                        .Builder(WeatherActivity.this, btn_spoken)
-                        .startActivity(intent_spoken_forecast);
+                startActivity(intent_spoken_forecast);
+                overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
                 cl_menu.setVisibility(View.GONE);
                 break;
             case R.id.btn_about:
                 Intent intent_about = new Intent(WeatherActivity.this, AboutActivity.class);
-                new BaseViewHelper
-                        .Builder(WeatherActivity.this, btn_about)
-                        .startActivity(intent_about);
+                startActivity(intent_about);
+                overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
                 cl_menu.setVisibility(View.GONE);
                 break;
             case R.id.btn_location:
+                TranslateAnimation translateAnimation = new
+                        TranslateAnimation(0, 0, 0, 20);
+                translateAnimation.setDuration(300);
+                translateAnimation.setRepeatCount(6);
+                btn_location.startAnimation(translateAnimation);
                 //绑定百度定位
                 mLocationClient = new LocationClient(this);
                 myLocationListener = new MyLocationListener(btn_location);
@@ -864,6 +964,11 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                         .setCancelable(false)
                         .setPositiveButton("删除", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
+                                String city_delete = tv_title.getText().toString();
+                                CitylistGet = getListFromLocal("CityList");
+                                CitylistGet.remove(city_delete);
+                                saveListInLocal(CitylistGet, "CityList");
+                                addCity(CitylistGet.get(0));
                                 Toast.makeText(WeatherActivity.this, "删除成功", Toast.LENGTH_SHORT).show();
                             }
                         })
@@ -894,9 +999,39 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                 .setCancelable(true)
                 .setPositiveButton(bt1Text, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        EditText et_add_city = (EditText) view.findViewById(R.id.et_add_city);
-                        String cityText = et_add_city.getText().toString();
-                        addCity(cityText);
+                        //先判断现在手机的网络状态
+                        int NewWorkType = HttpUtil.getAPNType(MyApplication.getContext());
+                        if (NewWorkType == 0) {
+                            Toast.makeText(WeatherActivity.this, "没有网络，我什么都帮不了你哦！", Toast.LENGTH_SHORT).show();
+                        } else {
+                            final AlertDialog tip_dialog = new AlertDialog.Builder(WeatherActivity.this)
+                                    .setTitle("提示")
+                                    .setMessage("以后只能在这里添加你经常查看的城市哟")
+                                    .show();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    tip_dialog.dismiss();
+                                    EditText et_add_city = (EditText) view.findViewById(R.id.et_add_city);
+                                    String cityText = et_add_city.getText().toString();
+                                    /**
+                                     * 先取到库中的城市列表，再将需要添加的城市名加进去再存储
+                                     * 将获取到的城市名存储到列表中并写入SharedPreferences
+                                     */
+                                    if (getListFromLocal("CityList") == null) {
+                                        CitylistSave.add(cityText);
+                                        saveListInLocal(CitylistSave, "CityList");
+                                    } else {
+                                        CitylistGet = getListFromLocal("CityList");
+                                        CitylistGet.add(cityText);
+                                        saveListInLocal(CitylistGet, "CityList");
+                                    }
+                                    Log.e("saveArrayList:", "Save ArrayList success" + CitylistSave);
+
+                                    addCity(cityText);
+                                }
+                            }, 1500);
+                        }
                     }
                 })
                 .show();
@@ -929,6 +1064,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                             editor.putString("weather", responseText);
                             editor.apply();
                             //mWeatherId = weather.basic.weatherId;
+
                             showWeatherInfo6(weather);
                             cl_menu.setVisibility(View.GONE);
                             btn_float.setVisibility(View.VISIBLE);
@@ -936,6 +1072,12 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
                         } else {
                             cl_menu.setVisibility(View.GONE);
                             btn_float.setVisibility(View.VISIBLE);
+                            //将刚才加进来的错误城市名从城市列表中移除
+                            CitylistGet = getListFromLocal("CityList");
+                            int i = CitylistGet.size();
+                            CitylistSave.remove(CitylistGet.get(i - 1));
+                            saveListInLocal(CitylistSave, "CityList");
+                            //提醒用户
                             Snackbar.make(btn_location, "查询不到该城市天气信息", Snackbar.LENGTH_LONG)
                                     .setAction("确认", new View.OnClickListener() {
                                         @Override
@@ -962,6 +1104,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
      */
     // 用来计算返回键的点击间隔时间
     private long exitTime = 0;
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK
@@ -977,6 +1120,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         }
         return super.onKeyDown(keyCode, event);
     }
+
     /**
      * 重写Activity生命周期的Restart()方法
      */
@@ -991,6 +1135,7 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         //先停止再销毁
         MyApplication.stopWakeuper();
         MyApplication.destroyWakeuper();
+        unbinder.unbind();
         super.onDestroy();
     }
 }

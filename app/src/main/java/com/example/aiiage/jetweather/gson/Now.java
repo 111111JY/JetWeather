@@ -14,6 +14,10 @@ public class   Now {
     public String cond_code;
     @SerializedName("cond")
     public More more;
+    @SerializedName("hum")
+    public String hum;
+    @SerializedName("wind_dir")
+    public String wind_dir;
 
     public class More {
         @SerializedName("txt")

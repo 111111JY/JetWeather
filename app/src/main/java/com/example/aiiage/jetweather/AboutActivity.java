@@ -72,14 +72,6 @@ public class AboutActivity extends AppCompatActivity {
             }, 1);
         }
 
-        helper = new BaseViewHelper
-                .Builder(AboutActivity.this)
-                .isFullWindow(true)//是否全屏显示
-                .isShowTransition(true)//是否显示过渡动画
-                .setDimColor(Color.BLACK)//遮罩颜色
-                .setDimAlpha(200)//遮罩透明度
-                .create();//开始动画
-
         TextView tv_version = (TextView) findViewById(R.id.tv_version);
         try {
             String Version_Name = getVersionName();
@@ -150,15 +142,10 @@ public class AboutActivity extends AppCompatActivity {
 
 
     @Override
-    public void onBackPressed() {
-        if (helper != null && helper.isShowing()) {
-            helper.backActivity(this);
-        } else {
-            super.onBackPressed();
-            finish();
-        }
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.zoom_in,R.anim.zoom_out);
     }
-
 
     @Override
     protected void onDestroy() {

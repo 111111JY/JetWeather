@@ -20,6 +20,8 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            aaptOptions.cruncherEnabled = false
+            aaptOptions.useNewCruncher = false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -54,4 +56,5 @@ dependencies {
     compile 'com.laocaixw.suspendbuttonlayout:suspendbuttonlayout:1.0.3'
     implementation files('libs/BaiduLBS_Android.jar')
     implementation files('libs/Msc.jar')
+    implementation files('libs/lite-orm-1.7.0.jar')
 }

@@ -17,6 +17,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.example.aiiage.jetweather.gson.Weather;
 import com.example.aiiage.jetweather.util.HttpUtil;
+import com.example.aiiage.jetweather.util.SharePreUtil;
 import com.example.aiiage.jetweather.viewspread.helper.BaseViewHelper;
 
 import java.io.IOException;
@@ -61,6 +63,8 @@ public class AddCityActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_locate);
         ButterKnife.bind(this);
+        //初始化用户体重
+        SharePreUtil.saveInt(this, "weight", 60);
         mLocationClient = new LocationClient(this);
         myLocationListener = new MyLocationListener(tv_location_city);
         mLocationClient.registerLocationListener(myLocationListener);
@@ -113,7 +117,7 @@ public class AddCityActivity extends Activity {
                         if (NetWorkType1 == 0) {
                             Toast.makeText(AddCityActivity.this, "请开启网络再重试！", Toast.LENGTH_SHORT).show();
                         } else {
-                            mLocationClient.start();
+                            //mLocationClient.start();
                             Toast.makeText(AddCityActivity.this, "定位成功了", Toast.LENGTH_SHORT).show();
                             tv_next_step.setClickable(true);
                             btn_next_step.setClickable(true);
@@ -123,9 +127,8 @@ public class AddCityActivity extends Activity {
                                     String cityName = tv_location_city.getText().toString();
                                     Intent intent = new Intent(AddCityActivity.this, WeatherActivity.class);
                                     intent.putExtra("cityName", cityName);
-                                    new BaseViewHelper
-                                            .Builder(AddCityActivity.this, tv_next_step)
-                                            .startActivity(intent);
+                                    startActivity(intent);
+                                    overridePendingTransition(R.anim.zoom_in,R.anim.zoom_out);
                                     //startActivity(intent);
                                     finish();
                                 }
@@ -136,18 +139,21 @@ public class AddCityActivity extends Activity {
                                     String cityName = tv_location_city.getText().toString();
                                     Intent intent = new Intent(AddCityActivity.this, WeatherActivity.class);
                                     intent.putExtra("cityName", cityName);
-                                    new BaseViewHelper
-                                            .Builder(AddCityActivity.this, btn_next_step)
-                                            .startActivity(intent);
+                                    startActivity(intent);
+                                    overridePendingTransition(R.anim.zoom_in,R.anim.zoom_out);
                                     //startActivity(intent);
                                     finish();
                                 }
                             });
                         }
-
                     }
                 });
             } else {
+                TranslateAnimation translateAnimation = new
+                        TranslateAnimation(0, 0, 0, 50);
+                translateAnimation.setDuration(200);
+                translateAnimation.setRepeatCount(5);
+                btn_big_location.startAnimation(translateAnimation);
                 mLocationClient.start();
                 tv_next_step.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -155,9 +161,8 @@ public class AddCityActivity extends Activity {
                         String cityName = tv_location_city.getText().toString();
                         Intent intent = new Intent(AddCityActivity.this, WeatherActivity.class);
                         intent.putExtra("cityName", cityName);
-                        new BaseViewHelper
-                                .Builder(AddCityActivity.this, tv_next_step)
-                                .startActivity(intent);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.zoom_in,R.anim.zoom_out);
                         //startActivity(intent);
                         finish();
                     }
@@ -168,9 +173,8 @@ public class AddCityActivity extends Activity {
                         String cityName = tv_location_city.getText().toString();
                         Intent intent = new Intent(AddCityActivity.this, WeatherActivity.class);
                         intent.putExtra("cityName", cityName);
-                        new BaseViewHelper
-                                .Builder(AddCityActivity.this, btn_next_step)
-                                .startActivity(intent);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.zoom_in,R.anim.zoom_out);
                        // startActivity(intent);
                         finish();
                     }
@@ -187,6 +191,7 @@ public class AddCityActivity extends Activity {
         option.setCoorType("bd09ll");
         option.setScanSpan(1000);
         mLocationClient.setLocOption(option);
+
     }
 
     class MyLocationListener implements BDLocationListener {
@@ -209,6 +214,7 @@ public class AddCityActivity extends Activity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        mLocationClient.restart();
         switch (requestCode){
             case 1:
                 if (grantResults.length>0){
