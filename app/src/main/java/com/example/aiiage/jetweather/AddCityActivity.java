@@ -63,8 +63,6 @@ public class AddCityActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_locate);
         ButterKnife.bind(this);
-        //初始化用户体重
-        SharePreUtil.saveInt(this, "weight", 60);
         mLocationClient = new LocationClient(this);
         myLocationListener = new MyLocationListener(tv_location_city);
         mLocationClient.registerLocationListener(myLocationListener);

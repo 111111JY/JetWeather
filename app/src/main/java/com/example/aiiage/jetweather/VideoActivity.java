@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import com.example.aiiage.jetweather.util.SharePreUtil;
 import com.example.aiiage.jetweather.viewspread.view.CustomVideoView;
 
 import static android.graphics.Color.TRANSPARENT;
@@ -27,6 +28,8 @@ public class VideoActivity extends AppCompatActivity {
         setContentView(R.layout.layout_video);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         MyApplication.setNoStatusBarFullMode(VideoActivity.this);
+        //初始化用户体重
+        SharePreUtil.saveInt(this, "weight", 60);
         init();
     }
 
