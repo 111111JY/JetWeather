@@ -162,18 +162,22 @@ public class StepCountMainActivity extends AppCompatActivity implements View.OnC
                 //StepData stepData=new StepData();
                 String CURRENT_DATE = getTodayDate();
                 List<step.step.bean.StepData> list = DbUtils.getQueryByWhere(step.step.bean.StepData.class, "today", new String[]{CURRENT_DATE});
-                int current_step = Integer.parseInt(list.get(0).getStep());
-                int weight = SharePreUtil.getInt(this, "weight", 60);
-                float  cal = weight / 2000.0f * current_step;
-                float reduce_fat = cal / 18;
-                if (current_step == 0) {
+                if (list.isEmpty()){
                     Toast.makeText(this, "走路运动后才可以测哟", Toast.LENGTH_SHORT).show();
-                } else {
-                    tv_cal.setText("大约消耗了" + cal + "cal卡路里");
-                    tv_reduce_fat.setText("大约消耗了   " + reduce_fat + "g脂肪");
-                    Toast.makeText(this, "要坚持锻炼哦", Toast.LENGTH_SHORT).show();
+                }else {
+                    int current_step = Integer.parseInt(list.get(0).getStep());
+                    int weight = SharePreUtil.getInt(this, "weight", 60);
+                    float  cal = weight / 2000.0f * current_step;
+                    float reduce_fat = cal / 18;
+                    if (current_step == 0) {
+                        Toast.makeText(this, "走路运动后才可以测哟", Toast.LENGTH_SHORT).show();
+                    } else {
+                        tv_cal.setText("大约消耗了" + cal + "cal卡路里");
+                        tv_reduce_fat.setText("大约消耗了   " + reduce_fat + "g脂肪");
+                        Toast.makeText(this, "要坚持锻炼哦", Toast.LENGTH_SHORT).show();
+                    }
+                    Log.d(StepCountMainActivity.class.getSimpleName(), "现有步数" + current_step + "卡路里" + cal + ",脂肪" + reduce_fat);
                 }
-                 Log.d(StepCountMainActivity.class.getSimpleName(), "现有步数" + current_step + "卡路里" + cal + ",脂肪" + reduce_fat);
                 break;
             default:
                 break;

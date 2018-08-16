@@ -14,6 +14,8 @@
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
         android:src="@drawable/btn_float"
+        app:backgroundTint="@color/text_red"
+        app:rippleColor="@color/white"
         app:elevation="8dp"
         app:fabSize="auto" />
 
