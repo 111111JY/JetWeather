@@ -1,52 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/holo_blue_light">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/layout_delete_bg_shape"
-        android:textColor="#000"
-        android:id="@+id/btn_skip"
-        android:text="3S 跳过"
-        android:layout_gravity="end"/>
-    <ImageView
-        android:id="@+id/iv_splash_icon"
-        android:layout_width="120dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="250dp"
-        android:background="@drawable/weather_icon" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/layout_delete_bg_shape"
+            android:textColor="#000"
+            android:id="@+id/btn_skip"
+            android:text="3S 跳过"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="50dp"
-        android:text="JetWeather"
-        android:textColor="#fff"
-        android:textSize="40sp"
-        android:textStyle="italic"
-        />
+        <ImageView
+            android:id="@+id/iv_splash_icon"
+            android:layout_width="120dp"
+            android:layout_height="100dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="233dp"
+            android:background="@drawable/weather_icon" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_marginBottom="40dp"
-        android:layout_marginRight="10dp"
-        android:text="一个简而美的App"
-        android:textColor="#fff" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv_splash_icon"
+            android:text="JetWeather"
+            android:layout_centerInParent="true"
+            android:textColor="#fff"
+            android:textSize="40sp"
+            android:textStyle="italic"
+            />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_marginBottom="15dp"
-        android:layout_marginRight="10dp"
-        android:text="Created by Wei.wj"
-        android:textColor="#fff" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="40dp"
+            android:layout_marginRight="10dp"
+            android:text="一个简而美的App"
+            android:textColor="#fff" />
 
-</FrameLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="10dp"
+            android:text="Created by Wei.wj"
+            android:textColor="#fff" />
+    </RelativeLayout>
+</LinearLayout>

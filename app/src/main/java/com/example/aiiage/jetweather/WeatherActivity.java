@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -167,6 +169,13 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
         //MyApplication.setStatusBarColor(this, Color.TRANSPARENT);
 
         setContentView(R.layout.layout_weather);
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         unbinder = ButterKnife.bind(this);
         //给按键绑定点击事件监听
         btn_location.setOnClickListener(this);
@@ -1125,9 +1134,9 @@ public class WeatherActivity extends AppCompatActivity implements View.OnClickLi
      * 重写Activity生命周期的Restart()方法
      */
     @Override
-    protected void onRestart() {
+    protected void onResume() {
+        super.onResume();
         init();
-        super.onRestart();
     }
 
     @Override

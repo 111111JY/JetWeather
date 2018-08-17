@@ -6,7 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -57,35 +59,43 @@ public class AddCityActivity extends Activity {
     Button btn_big_location;
     private LocationClient mLocationClient;
     private MyLocationListener myLocationListener;
+    String canNext;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_locate);
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         ButterKnife.bind(this);
         mLocationClient = new LocationClient(this);
         myLocationListener = new MyLocationListener(tv_location_city);
         mLocationClient.registerLocationListener(myLocationListener);
-        List<String> permissionList  = new ArrayList<>();
-        if (ContextCompat.checkSelfPermission(AddCityActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+        List<String> permissionList = new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(AddCityActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
-        if (ContextCompat.checkSelfPermission(AddCityActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(AddCityActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissionList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         }
-        if (ContextCompat.checkSelfPermission(AddCityActivity.this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(AddCityActivity.this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
             permissionList.add(Manifest.permission.INTERNET);
         }
-        if (ContextCompat.checkSelfPermission(AddCityActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(AddCityActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
-        if (ContextCompat.checkSelfPermission(AddCityActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(AddCityActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             permissionList.add(Manifest.permission.READ_PHONE_STATE);
         }
-        if (!permissionList.isEmpty()){
+        if (!permissionList.isEmpty()) {
             String[] permissions = permissionList.toArray(new String[permissionList.size()]);
             ActivityCompat.requestPermissions(AddCityActivity.this, permissions, 1);
-        }else{
+        } else {
             initLocation();
             /**
              * 判断打开软件时是否开启了网络
@@ -115,7 +125,7 @@ public class AddCityActivity extends Activity {
                         if (NetWorkType1 == 0) {
                             Toast.makeText(AddCityActivity.this, "请开启网络再重试！", Toast.LENGTH_SHORT).show();
                         } else {
-                            //mLocationClient.start();
+                            mLocationClient.start();
                             Toast.makeText(AddCityActivity.this, "定位成功了", Toast.LENGTH_SHORT).show();
                             tv_next_step.setClickable(true);
                             btn_next_step.setClickable(true);
@@ -126,7 +136,7 @@ public class AddCityActivity extends Activity {
                                     Intent intent = new Intent(AddCityActivity.this, WeatherActivity.class);
                                     intent.putExtra("cityName", cityName);
                                     startActivity(intent);
-                                    overridePendingTransition(R.anim.zoom_in,R.anim.zoom_out);
+                                    overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
                                     //startActivity(intent);
                                     finish();
                                 }
@@ -138,7 +148,7 @@ public class AddCityActivity extends Activity {
                                     Intent intent = new Intent(AddCityActivity.this, WeatherActivity.class);
                                     intent.putExtra("cityName", cityName);
                                     startActivity(intent);
-                                    overridePendingTransition(R.anim.zoom_in,R.anim.zoom_out);
+                                    overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
                                     //startActivity(intent);
                                     finish();
                                 }
@@ -147,34 +157,50 @@ public class AddCityActivity extends Activity {
                     }
                 });
             } else {
-                TranslateAnimation translateAnimation = new
-                        TranslateAnimation(0, 0, 0, 50);
-                translateAnimation.setDuration(200);
-                translateAnimation.setRepeatCount(5);
-                btn_big_location.startAnimation(translateAnimation);
-                mLocationClient.start();
+                btn_big_location.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        TranslateAnimation translateAnimation = new
+                                TranslateAnimation(0, 0, 0, 50);
+                        translateAnimation.setDuration(200);
+                        translateAnimation.setRepeatCount(5);
+                        btn_big_location.startAnimation(translateAnimation);
+                        mLocationClient.start();
+                    }
+                });
+
                 tv_next_step.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String cityName = tv_location_city.getText().toString();
-                        Intent intent = new Intent(AddCityActivity.this, WeatherActivity.class);
-                        intent.putExtra("cityName", cityName);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.zoom_in,R.anim.zoom_out);
-                        //startActivity(intent);
-                        finish();
+                        canNext = tv_location_city.getText().toString();
+                        if (canNext.equals("请点击定位") || canNext.equals("无法定位")) {
+                            Toast.makeText(getApplication(), "请定位后再下一步", Toast.LENGTH_SHORT).show();
+                        } else {
+                            String cityName = tv_location_city.getText().toString();
+                            Intent intent = new Intent(AddCityActivity.this, WeatherActivity.class);
+                            intent.putExtra("cityName", cityName);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
+                            //startActivity(intent);
+                            finish();
+                        }
                     }
                 });
                 btn_next_step.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String cityName = tv_location_city.getText().toString();
-                        Intent intent = new Intent(AddCityActivity.this, WeatherActivity.class);
-                        intent.putExtra("cityName", cityName);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.zoom_in,R.anim.zoom_out);
-                       // startActivity(intent);
-                        finish();
+                        canNext = tv_location_city.getText().toString();
+                        if (canNext.equals("请点击定位") || canNext.equals("无法定位")) {
+                            Toast.makeText(getApplication(), "请定位后再下一步", Toast.LENGTH_SHORT).show();
+                        } else {
+                            String cityName = tv_location_city.getText().toString();
+                            Intent intent = new Intent(AddCityActivity.this, WeatherActivity.class);
+                            intent.putExtra("cityName", cityName);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
+                            //startActivity(intent);
+                            finish();
+                        }
                     }
                 });
             }
@@ -189,7 +215,6 @@ public class AddCityActivity extends Activity {
         option.setCoorType("bd09ll");
         option.setScanSpan(1000);
         mLocationClient.setLocOption(option);
-
     }
 
     class MyLocationListener implements BDLocationListener {
@@ -212,12 +237,11 @@ public class AddCityActivity extends Activity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        mLocationClient.restart();
-        switch (requestCode){
+        switch (requestCode) {
             case 1:
-                if (grantResults.length>0){
-                    for (int result:grantResults){
-                        if (result!=PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0) {
+                    for (int result : grantResults) {
+                        if (result != PackageManager.PERMISSION_GRANTED) {
                             Snackbar.make(btn_big_location, "必须同意所有权限才能使用本程序所有功能", Snackbar.LENGTH_LONG)
                                     .setAction("确认", new View.OnClickListener() {
                                         @Override
@@ -229,11 +253,11 @@ public class AddCityActivity extends Activity {
                             return;
                         }
                     }
-                }else {
+                } else {
                     Toast.makeText(this, "发送未知错误", Toast.LENGTH_SHORT).show();
                 }
                 break;
-                default:
+            default:
         }
     }
 }

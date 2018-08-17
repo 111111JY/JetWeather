@@ -176,5 +176,12 @@ public class SetPlanActivity extends AppCompatActivity implements View.OnClickLi
         super.finish();
         overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+        finish();
+    }
 }
 

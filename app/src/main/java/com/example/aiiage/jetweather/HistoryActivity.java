@@ -86,4 +86,11 @@ public class HistoryActivity extends AppCompatActivity {
         super.finish();
         overridePendingTransition(R.anim.zoom_in, R.anim.zoom_out);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+        finish();
+    }
 }
