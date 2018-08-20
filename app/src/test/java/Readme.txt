@@ -11,8 +11,8 @@
 
 {
   "version": {
-           "Version_Name":"1.0",
-           "Version_Code":"1"
+           "VersionName":"1.0",
+           "VersionCode":"1"
             }
 }
 

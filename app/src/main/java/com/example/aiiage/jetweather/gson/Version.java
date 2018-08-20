@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Version {
     @SerializedName("VersionName")
-    private String VersionName;
+    public String VersionName;
     @SerializedName("VersionCode")
-    private int VersionCode;
+    public int VersionCode;
 }

@@ -56,7 +56,6 @@ public class AboutActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName componentName) {
         }
     };
-    BaseViewHelper helper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,15 +95,14 @@ public class AboutActivity extends AppCompatActivity {
                  * 获取服务器apk的版本信息地址
                  */
                 String version_check_url = "";
-                requestVersionName(version_check_url);
+                //requestVersionName(version_check_url);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         try {
                             int local_version_code = getVersionCode();
                             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext());
-                            //String apk_version_name=prefs.getString("Version_Name","1.0");
-                            int apk_version_code = prefs.getInt("Version_Code", 1);
+                            int apk_version_code=1;// = prefs.getInt("VersionCode", 1);
                             //判断是否需要更新
                             if (local_version_code < apk_version_code) {
                                 new AlertDialog.Builder(AboutActivity.this)
@@ -126,7 +124,7 @@ public class AboutActivity extends AppCompatActivity {
                                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
-                                                // downloadBinder.cancelDownload();
+                                                downloadBinder.cancelDownload();
                                                 Toast.makeText(AboutActivity.this, "取消", Toast.LENGTH_SHORT).show();
                                             }
                                         })
@@ -205,7 +203,7 @@ public class AboutActivity extends AppCompatActivity {
      * @param url
      */
     public void requestVersionName(String url) {
-        String Url = "http://guolin.tech/api/weather?cityid=";
+        String Url = url;
         Log.d(MyApplication.getContext().getPackageName(), "requestWeather: " + Url);
         HttpUtil.sendOkHttpRequest(Url, new Callback() {
             @Override
@@ -228,7 +226,8 @@ public class AboutActivity extends AppCompatActivity {
                         if (version != null) {
                             SharedPreferences.Editor editor = PreferenceManager
                                     .getDefaultSharedPreferences(AboutActivity.this).edit();
-                            editor.putString("version", responseText);
+                            editor.putString("VersionName", version.VersionName);
+                            editor.putInt("VersionCode",version.VersionCode);
                             editor.apply();
                             Log.d(MyApplication.getContext().getPackageName(), "run: -----------------------" + version.toString());
                         }
@@ -237,5 +236,4 @@ public class AboutActivity extends AppCompatActivity {
             }
         });
     }
-
 }

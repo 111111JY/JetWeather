@@ -12,9 +12,9 @@
 
 `
 {
-  "version": {
-           "Version_Name":"1.0",
-           "Version_Code":"1"
+  "apkVersion": {
+           "VersionName":"1.0",
+           "VersionCode":"1"
             }
 }`
 
